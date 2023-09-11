@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="./assets/style.css">
+  <script type="module" src="./assets/script.js"></script>
+  <title>Breakout</title>
+</head>
+
+
+<body>
+
+<main>
+  <canvas id="game" width="768" height="768"></canvas>
+  <div class="too-small">
+    <span>Minimum recommended screen size is 768 x 768.</span>
+    <button onclick="event.target.parentElement.remove()">dismiss</button>
+  </div>
+  <form id="setup">
+    <h1>Breakout</h1>
+    <span>- select a layout -</span>
+    <ul class="layout-container">
+      <li class="layout-option">
+        <input type="radio" name="layout" value="rectangle" id="rectangle" checked autofocus>
+        <label for="rectangle"><img src="./assets/img/preview_rectangle.png" alt="Rectangle layout" width="192" height="192" class="layout-preview"></label>
+        <span class="layout-name">Rectangle</span>
+      </li>
+      <li class="layout-option">
+        <input type="radio" name="layout" value="cross" id="cross">
+        <label for="cross"><img src="./assets/img/preview_cross.png" alt="Cross layout" width="192" height="192" class="layout-preview"></label>
+        <span class="layout-name">Cross</span>
+      </li>
+      <li class="layout-option">
+        <input type="radio" name="layout" value="typescript" id="typescript">
+        <label for="typescript"><img src="./assets/img/preview_typescript.png" alt="TypeScript layout" width="192" height="192" class="layout-preview"></label>
+        <span class="layout-name">TypeScript</span>
+      </li>
+    </ul>
+    <input type="submit" value="start game (ENTER)">
+  </form>
+  <span class="attribution">©️ 2023 <a href="https://github.com/peterhohk" target="_blank">peterhohk</a></span>
+</main>
+
+</body>
+
+</html>
