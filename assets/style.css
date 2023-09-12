@@ -69,30 +69,31 @@ button, [type="submit"] {
 main {
   position: relative;
 }
-#game {
-  display: block;
-  max-width: 100svw;
-  max-height: 100svh;
-  background-color: var(--black);
-}
-main > :not(#game) {
+main > :where(:not(#game)) {
   position: absolute;
   inset: 0;
   padding: 0.5em 1em;
   width: fit-content;
   height: fit-content;
 }
+#game {
+  display: block;
+  max-width: 100svw;
+  max-height: 100svh;
+  background-color: var(--black);
+}
 main > :not(.too-small) {
   font-size: min(calc(6.25vmin/3), 1rem);
 }
 .too-small {
   margin: auto;
-  background-color: color-mix(in srgb, var(--grey), transparent);
+  background-color: color-mix(in srgb, var(--white) 25%, transparent);
   z-index: 1;
 }
 #setup {
+  width: 39em;
   margin: auto;
-  background-color: color-mix(in srgb, var(--grey), transparent);
+  background-color: color-mix(in srgb, var(--white) 25%, transparent);
 }
 h1 {
   font-size: 2em;
@@ -102,7 +103,7 @@ h1 {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5em;
-  margin: 1em;
+  margin-block: 1em;
 }
 .layout-option {
   position: relative;
