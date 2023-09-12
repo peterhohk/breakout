@@ -1,5 +1,5 @@
 "use strict";
-import { addBricks } from "./patterns.js";
+import { addBricks } from "./layouts.js";
 function deg2rad(deg) {
     return deg * Math.PI / 180;
 }
@@ -83,13 +83,16 @@ export class Game {
         const handleTouchEnd = (e) => {
             if (!this.activeTouch)
                 return;
-            const touch = e.changedTouches.item(0);
-            if (touch.identifier === this.activeTouch.identifier) {
-                if (this.activeTouch.isTap) {
-                    this.touchStatus.justUntapped = true;
-                    window.requestAnimationFrame(() => { this.touchStatus.justUntapped = false; });
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches.item(i);
+                if (touch.identifier === this.activeTouch.identifier) {
+                    if (this.activeTouch.isTap) {
+                        this.touchStatus.justUntapped = true;
+                        window.requestAnimationFrame(() => { this.touchStatus.justUntapped = false; });
+                    }
+                    this.activeTouch = null;
+                    break;
                 }
-                this.activeTouch = null;
             }
         };
         window.addEventListener("touchstart", handleTouchStart);
@@ -169,8 +172,8 @@ export class Game {
     getObject(objClass) {
         return this.getAllObjects(objClass)[0];
     }
-    addBricks(pattern) {
-        addBricks(this, pattern);
+    addBricks(layout) {
+        addBricks(this, layout);
     }
     drawText(text, x, y, f, b, a) {
         this.ctx.save();

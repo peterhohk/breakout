@@ -1,6 +1,6 @@
 "use strict";
 
-import { LayoutName, addBricks } from "./patterns.js";
+import { LayoutName, addBricks } from "./layouts.js";
 
 // utility
 
@@ -104,13 +104,16 @@ export class Game {
     };
     const handleTouchEnd = (e: TouchEvent) => {
       if (!this.activeTouch) return;
-      const touch = e.changedTouches.item(0)!;
-      if (touch.identifier === this.activeTouch.identifier) {
-        if (this.activeTouch.isTap) {
-          this.touchStatus.justUntapped = true;
-          window.requestAnimationFrame(() => { this.touchStatus.justUntapped = false; });
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const touch = e.changedTouches.item(i)!;
+        if (touch.identifier === this.activeTouch.identifier) {
+          if (this.activeTouch.isTap) {
+            this.touchStatus.justUntapped = true;
+            window.requestAnimationFrame(() => { this.touchStatus.justUntapped = false; });
+          }
+          this.activeTouch = null;
+          break;
         }
-        this.activeTouch = null;
       }
     };
     window.addEventListener("touchstart", handleTouchStart);
@@ -186,8 +189,8 @@ export class Game {
   getObject<T extends GameObject>(objClass: Constructor<T>) {
     return this.getAllObjects(objClass)[0];
   }
-  addBricks(pattern: LayoutName) {
-    addBricks(this, pattern);
+  addBricks(layout: LayoutName) {
+    addBricks(this, layout);
   }
   drawText(text: string, x: number, y: number, f: string, b: CanvasTextBaseline, a: CanvasTextAlign) {
     this.ctx.save();

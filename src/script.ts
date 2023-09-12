@@ -1,7 +1,7 @@
 "use strict";
 
 import { Game, Ball, Paddle } from "./classes.js";
-import { LayoutName } from "./patterns.js";
+import { LayoutName } from "./layouts.js";
 
 const setup = document.querySelector("#setup") as HTMLFormElement;
 setup.addEventListener("submit", (e) => {
