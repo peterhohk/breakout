@@ -2,7 +2,23 @@
 
 import { LayoutName, addBricks } from "./patterns.js";
 
-// utility functions
+// utility
+
+type Constructor<T> = new (...args: any[]) => T;
+
+type TouchObject = {
+  identifier: number,
+  isTap: boolean;
+  lastX: number,
+  lastY: number,
+  currentX: number,
+  currentY: number,
+};
+type TouchStatus = {
+  justTapped: boolean,
+  justMoved: boolean,
+  justUntapped: boolean,
+};
 
 function deg2rad(deg: number) {
   return deg * Math.PI / 180;
@@ -13,8 +29,6 @@ function rad2deg(rad: number) {
 
 // class definitions
 
-type Constructor<T> = new (...args: any[]) => T;
-
 export class Game {
   debug = false;
   canvas: HTMLCanvasElement;
@@ -24,11 +38,17 @@ export class Game {
   stats = {
     score: 0,
     lives: 3,
-  }
-  pressed: {[k: string]: boolean} = {
+  };
+  keypresses: {[k: string]: boolean} = {
     "ArrowLeft": false,
     "ArrowRight": false,
     " ": false,
+  };
+  activeTouch: TouchObject | null = null;
+  touchStatus: TouchStatus = {
+    justTapped: false,
+    justMoved: false,
+    justUntapped: false,
   };
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -39,12 +59,64 @@ export class Game {
     this.ctx.fillStyle = "#eee";
     this.ctx.strokeStyle = "#eee";
     this.ctx.lineWidth = 2;
+    // handle keyboard input
     window.addEventListener("keydown", (e) => {
-      if (this.pressed.hasOwnProperty(e.key)) { this.pressed[e.key] = true; }
+      if (this.keypresses.hasOwnProperty(e.key)) {
+        this.keypresses[e.key] = true;
+      }
     });
     window.addEventListener("keyup", (e) => {
-      if (this.pressed.hasOwnProperty(e.key)) { this.pressed[e.key] = false; }
+      if (this.keypresses.hasOwnProperty(e.key)) {
+        this.keypresses[e.key] = false;
+      }
     });
+    // handle touch input
+    const handleTouchStart = (e: TouchEvent) => {
+      if (this.activeTouch) return;
+      const bound = this.canvas.getBoundingClientRect();
+      const touch = e.changedTouches.item(0)!;
+      this.activeTouch = {
+        identifier: touch.identifier,
+        isTap: true,
+        lastX: touch.clientX - bound.x,
+        lastY: touch.clientY - bound.y,
+        currentX: touch.clientX - bound.x,
+        currentY: touch.clientY - bound.y,
+      };
+      this.touchStatus.justTapped = true;
+      window.requestAnimationFrame(() => { this.touchStatus.justTapped = false; });
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!this.activeTouch) return;
+      const bound = this.canvas.getBoundingClientRect();
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const touch = e.changedTouches.item(i)!;
+        if (touch.identifier === this.activeTouch.identifier) {
+          this.activeTouch.isTap = false;
+          this.activeTouch.lastX = this.activeTouch.currentX;
+          this.activeTouch.lastY = this.activeTouch.currentY;
+          this.activeTouch.currentX = touch.clientX - bound.x;
+          this.activeTouch.currentY = touch.clientY - bound.y;
+          this.touchStatus.justMoved = true;
+          window.requestAnimationFrame(() => { this.touchStatus.justMoved = false; });
+        }
+      }
+    };
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (!this.activeTouch) return;
+      const touch = e.changedTouches.item(0)!;
+      if (touch.identifier === this.activeTouch.identifier) {
+        if (this.activeTouch.isTap) {
+          this.touchStatus.justUntapped = true;
+          window.requestAnimationFrame(() => { this.touchStatus.justUntapped = false; });
+        }
+        this.activeTouch = null;
+      }
+    };
+    window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("touchmove", (e) => { e.preventDefault(); handleTouchMove(e); }, {passive: false});
+    window.addEventListener("touchend", handleTouchEnd);
+    window.addEventListener("touchcancel", handleTouchEnd);
   }
   main() {
     if (this.playing) { window.requestAnimationFrame(() => this.main()); } else return;
@@ -230,7 +302,7 @@ export class Ball extends GameObject {
     // controls before firing
     if (!this.fired) {
       this.x = paddle.x;
-      if (this.game.pressed[" "]) {
+      if (this.game.keypresses[" "] || this.game.touchStatus.justUntapped) {
         this.fired = true;
         this.speed = 4;
         this.angle = -45;
@@ -245,17 +317,17 @@ export class Ball extends GameObject {
       this.bounceOff(paddle);
       this.speed = Math.min(this.speed + this.speedIncrement, this.maxSpeed);
       this.angle += (this.x - paddle.x) / (paddle.width/2) * this.angleVariation;
-    })
+    });
     // bounce off bricks and destroy bricks
     this.onCollisionWith(Brick, (brick) => {
       this.bounceOff(brick);
       this.game.removeObject(brick);
       this.game.stats.score++;
-    })
+    });
     // bounce off metal bricks
     this.onCollisionWith(Metal, (metal) => {
       this.bounceOff(metal);
-    })
+    });
     // lose a life if fail to catch ball
     if (this.y + this.vy > this.game.canvas.height + this.height) {
       this.game.stats.lives--;
@@ -273,6 +345,7 @@ export class Paddle extends GameObject {
   width = 128;
   height = 16;
   moveSpeed = 8;
+  touchSpeedMultiplier = 4;
   drawObject() {
     const lgrad = this.game.ctx.createLinearGradient(0, -this.height/2, 0, this.height/2);
     lgrad.addColorStop(0, "#eee");
@@ -282,12 +355,21 @@ export class Paddle extends GameObject {
   }
   updateObject() {
     // move with arrow keys
-    if (this.game.pressed["ArrowLeft"]) {
-      this.x = Math.max(this.x - this.moveSpeed, this.width/2);
+    if (this.game.keypresses["ArrowLeft"]) {
+      this.x -= this.moveSpeed;
     }
-    if (this.game.pressed["ArrowRight"]) {
-      this.x = Math.min(this.x + this.moveSpeed, this.game.canvas.width - this.width/2);
+    if (this.game.keypresses["ArrowRight"]) {
+      this.x += this.moveSpeed;
     }
+    // move with touch controls
+    if (this.game.activeTouch && this.game.touchStatus.justMoved) {
+      const touch = this.game.activeTouch;
+      this.x += (touch.currentX - touch.lastX) * this.touchSpeedMultiplier;
+    }
+    // keep paddle within bounds
+    const minX = this.width/2;
+    const maxX = this.game.canvas.width - this.width/2;
+    this.x = (this.x <= minX) ? minX : (this.x > maxX) ? maxX : this.x;
   }
 }
 

@@ -1,12 +1,12 @@
 "use strict";
 import { addBricks } from "./patterns.js";
-// utility functions
 function deg2rad(deg) {
     return deg * Math.PI / 180;
 }
 function rad2deg(rad) {
     return rad * 180 / Math.PI;
 }
+// class definitions
 export class Game {
     constructor(canvas) {
         this.debug = false;
@@ -16,10 +16,16 @@ export class Game {
             score: 0,
             lives: 3,
         };
-        this.pressed = {
+        this.keypresses = {
             "ArrowLeft": false,
             "ArrowRight": false,
             " ": false,
+        };
+        this.activeTouch = null;
+        this.touchStatus = {
+            justTapped: false,
+            justMoved: false,
+            justUntapped: false,
         };
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
@@ -29,16 +35,67 @@ export class Game {
         this.ctx.fillStyle = "#eee";
         this.ctx.strokeStyle = "#eee";
         this.ctx.lineWidth = 2;
+        // handle keyboard input
         window.addEventListener("keydown", (e) => {
-            if (this.pressed.hasOwnProperty(e.key)) {
-                this.pressed[e.key] = true;
+            if (this.keypresses.hasOwnProperty(e.key)) {
+                this.keypresses[e.key] = true;
             }
         });
         window.addEventListener("keyup", (e) => {
-            if (this.pressed.hasOwnProperty(e.key)) {
-                this.pressed[e.key] = false;
+            if (this.keypresses.hasOwnProperty(e.key)) {
+                this.keypresses[e.key] = false;
             }
         });
+        // handle touch input
+        const handleTouchStart = (e) => {
+            if (this.activeTouch)
+                return;
+            const bound = this.canvas.getBoundingClientRect();
+            const touch = e.changedTouches.item(0);
+            this.activeTouch = {
+                identifier: touch.identifier,
+                isTap: true,
+                lastX: touch.clientX - bound.x,
+                lastY: touch.clientY - bound.y,
+                currentX: touch.clientX - bound.x,
+                currentY: touch.clientY - bound.y,
+            };
+            this.touchStatus.justTapped = true;
+            window.requestAnimationFrame(() => { this.touchStatus.justTapped = false; });
+        };
+        const handleTouchMove = (e) => {
+            if (!this.activeTouch)
+                return;
+            const bound = this.canvas.getBoundingClientRect();
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches.item(i);
+                if (touch.identifier === this.activeTouch.identifier) {
+                    this.activeTouch.isTap = false;
+                    this.activeTouch.lastX = this.activeTouch.currentX;
+                    this.activeTouch.lastY = this.activeTouch.currentY;
+                    this.activeTouch.currentX = touch.clientX - bound.x;
+                    this.activeTouch.currentY = touch.clientY - bound.y;
+                    this.touchStatus.justMoved = true;
+                    window.requestAnimationFrame(() => { this.touchStatus.justMoved = false; });
+                }
+            }
+        };
+        const handleTouchEnd = (e) => {
+            if (!this.activeTouch)
+                return;
+            const touch = e.changedTouches.item(0);
+            if (touch.identifier === this.activeTouch.identifier) {
+                if (this.activeTouch.isTap) {
+                    this.touchStatus.justUntapped = true;
+                    window.requestAnimationFrame(() => { this.touchStatus.justUntapped = false; });
+                }
+                this.activeTouch = null;
+            }
+        };
+        window.addEventListener("touchstart", handleTouchStart);
+        window.addEventListener("touchmove", (e) => { e.preventDefault(); handleTouchMove(e); }, { passive: false });
+        window.addEventListener("touchend", handleTouchEnd);
+        window.addEventListener("touchcancel", handleTouchEnd);
     }
     main() {
         if (this.playing) {
@@ -231,7 +288,7 @@ export class Ball extends GameObject {
         // controls before firing
         if (!this.fired) {
             this.x = paddle.x;
-            if (this.game.pressed[" "]) {
+            if (this.game.keypresses[" "] || this.game.touchStatus.justUntapped) {
                 this.fired = true;
                 this.speed = 4;
                 this.angle = -45;
@@ -281,6 +338,7 @@ export class Paddle extends GameObject {
         this.width = 128;
         this.height = 16;
         this.moveSpeed = 8;
+        this.touchSpeedMultiplier = 4;
     }
     drawObject() {
         const lgrad = this.game.ctx.createLinearGradient(0, -this.height / 2, 0, this.height / 2);
@@ -291,12 +349,21 @@ export class Paddle extends GameObject {
     }
     updateObject() {
         // move with arrow keys
-        if (this.game.pressed["ArrowLeft"]) {
-            this.x = Math.max(this.x - this.moveSpeed, this.width / 2);
+        if (this.game.keypresses["ArrowLeft"]) {
+            this.x -= this.moveSpeed;
         }
-        if (this.game.pressed["ArrowRight"]) {
-            this.x = Math.min(this.x + this.moveSpeed, this.game.canvas.width - this.width / 2);
+        if (this.game.keypresses["ArrowRight"]) {
+            this.x += this.moveSpeed;
         }
+        // move with touch controls
+        if (this.game.activeTouch && this.game.touchStatus.justMoved) {
+            const touch = this.game.activeTouch;
+            this.x += (touch.currentX - touch.lastX) * this.touchSpeedMultiplier;
+        }
+        // keep paddle within bounds
+        const minX = this.width / 2;
+        const maxX = this.game.canvas.width - this.width / 2;
+        this.x = (this.x <= minX) ? minX : (this.x > maxX) ? maxX : this.x;
     }
 }
 export class Brick extends GameObject {
