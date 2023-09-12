@@ -372,7 +372,7 @@ export class Paddle extends GameObject {
     // keep paddle within bounds
     const minX = this.width/2;
     const maxX = this.game.canvas.width - this.width/2;
-    this.x = (this.x <= minX) ? minX : (this.x > maxX) ? maxX : this.x;
+    this.x = (this.x <= minX) ? minX : (this.x >= maxX) ? maxX : this.x;
   }
 }
 
