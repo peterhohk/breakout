@@ -159,7 +159,7 @@ h1 {
   margin: 0 auto auto 0;
   background-color: transparent;
 }
-@media (min-width: 384px) and (min-height: 384px) {
+@media (min-width: 24rem) and (min-height: 24rem) {
   .too-small {
     display: none;
   }

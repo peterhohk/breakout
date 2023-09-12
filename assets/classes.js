@@ -110,7 +110,7 @@ export class Game {
         // draw objects
         this.objects.forEach((obj) => obj.draw());
         // draw stats
-        this.drawText(this.stats.score.toString(), this.canvas.width - 2, 0, "2rem monospace", "top", "right");
+        this.drawText(this.stats.score.toString(), this.canvas.width - 2, 0, "32px monospace", "top", "right");
         for (let i = 0; i < this.stats.lives; i++) {
             this.ctx.save();
             this.ctx.translate(this.canvas.width - 10 - i * 20, 36);
@@ -128,19 +128,19 @@ export class Game {
             this.drawArrowhead(paddle.x + paddle.width / 2 + 32, paddle.y, 16, 12, 0);
             this.drawArrowhead(paddle.x - paddle.width / 2 - 32, paddle.y, 16, 12, 180);
             this.drawArrowhead(ball.x + 32, ball.y - 32, 16, 12, -45);
-            this.drawText("RIGHT", paddle.x + paddle.width / 2 + 24, paddle.y - 8, "1em monospace", "bottom", "center");
-            this.drawText("LEFT", paddle.x - paddle.width / 2 - 24, paddle.y - 8, "1em monospace", "bottom", "center");
-            this.drawText("SPACE", ball.x + 24, ball.y - 36, "1em monospace", "bottom", "center");
+            this.drawText("RIGHT", paddle.x + paddle.width / 2 + 24, paddle.y - 8, "16px monospace", "bottom", "center");
+            this.drawText("LEFT", paddle.x - paddle.width / 2 - 24, paddle.y - 8, "16px monospace", "bottom", "center");
+            this.drawText("SPACE", ball.x + 24, ball.y - 36, "16px monospace", "bottom", "center");
         }
         // draw win condition
         if (bricks.length === 0) {
             this.playing = false;
-            this.drawText("YOU WIN", this.canvas.width / 2, this.canvas.height / 2, "4rem monospace", "middle", "center");
+            this.drawText("YOU WIN", this.canvas.width / 2, this.canvas.height / 2, "64px monospace", "middle", "center");
         }
         // draw lose consition
         if (this.stats.lives === 0) {
             this.playing = false;
-            this.drawText("GAME OVER", this.canvas.width / 2, this.canvas.height / 2, "4rem monospace", "middle", "center");
+            this.drawText("GAME OVER", this.canvas.width / 2, this.canvas.height / 2, "64px monospace", "middle", "center");
         }
         // update objects
         this.objects.forEach((obj) => obj.update());
@@ -152,8 +152,8 @@ export class Game {
                 this.ctx.lineTo(ball.x + 1152 * Math.cos(deg2rad(ball.angle)), ball.y + 1152 * Math.sin(deg2rad(ball.angle)));
                 this.ctx.stroke();
             }
-            this.drawText(`Ball speed: ${ball.speed.toFixed(3)}`, 16, 32, "1em monospace", "top", "left");
-            this.drawText(`Ball angle: ${ball.angle.toFixed(3)}`, 16, 48, "1em monospace", "top", "left");
+            this.drawText(`Ball speed: ${ball.speed.toFixed(3)}`, 16, 32, "16px monospace", "top", "left");
+            this.drawText(`Ball angle: ${ball.angle.toFixed(3)}`, 16, 48, "16px monospace", "top", "left");
         }
     }
     // utility methods
