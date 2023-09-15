@@ -71,6 +71,9 @@ export function addBricks(game, layout) {
                     case "B":
                         game.addObject(Brick, px + 32, py, { size: "large", hue: 240 });
                         break;
+                    case "#":
+                        game.addObject(Metal, px + 32, py, { size: "large" });
+                        break;
                     case "r":
                         game.addObject(Brick, px + 16, py, { size: "medium", hue: 0 });
                         break;
@@ -79,9 +82,6 @@ export function addBricks(game, layout) {
                         break;
                     case "b":
                         game.addObject(Brick, px + 16, py, { size: "medium", hue: 240 });
-                        break;
-                    case "#":
-                        game.addObject(Metal, px + 32, py, { size: "large" });
                         break;
                 }
             }
@@ -112,6 +112,52 @@ export function addBricks(game, layout) {
                         break;
                     case " ":
                         game.addObject(Metal, px, py, { size: "medium" });
+                        break;
+                }
+            }
+        }
+    });
+    instructions.set("turtle", () => {
+        const template = [
+            "        g g        ",
+            "      ,g g g       ",
+            "       ,    ,      ",
+            "     # # # # #     ",
+            "    # g g g g #    ",
+            "   # g g g g g #   ",
+            "   xg g g g g g x  ",
+            "   xG  g g g G  x  ",
+            "   xg g g g g g x  ",
+            "Y  xG  g g g G  x  ",
+            "Y  Y  # # # # Y  y ",
+            "   Y          Y    ",
+            "   Y          Y    ",
+        ];
+        for (let row = 0; row < template.length; row++) {
+            for (let col = 0; col < template[row].length; col++) {
+                const px = game.canvas.width / 2 - (template[row].length - 1) * 16 + col * 32;
+                const py = 80 + row * 32;
+                switch (template[row][col]) {
+                    case "G":
+                        game.addObject(Brick, px + 32, py, { size: "large", hue: 150 });
+                        break;
+                    case "Y":
+                        game.addObject(Brick, px + 32, py, { size: "large", hue: 90 });
+                        break;
+                    case "g":
+                        game.addObject(Brick, px + 16, py, { size: "medium", hue: 150 });
+                        break;
+                    case "y":
+                        game.addObject(Brick, px + 16, py, { size: "medium", hue: 90 });
+                        break;
+                    case "#":
+                        game.addObject(Metal, px + 16, py, { size: "medium" });
+                        break;
+                    case ",":
+                        game.addObject(Brick, px, py, { size: "small", hue: 90 });
+                        break;
+                    case "x":
+                        game.addObject(Metal, px, py, { size: "small" });
                         break;
                 }
             }
