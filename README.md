@@ -4,7 +4,7 @@ An implementation of the classic brick breaking game using the Canvas API.
 
 Created as a practice project for writing TypeScript.
 
-## Techs used
+## Tech stack
 
 - HTML & CSS
 - [TypeScript](https://www.typescriptlang.org/)
