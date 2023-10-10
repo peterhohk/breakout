@@ -120,10 +120,10 @@ h1 {
   filter: grayscale(100%);
   opacity: 0.5;
 }
-.layout-option:has(:is(:hover, :focus-visible)) .layout-preview {
+.layout-button:is(:hover, :focus-visible) ~ label > .layout-preview {
   filter: none;
 }
-.layout-option:has(:checked) .layout-preview {
+.layout-button:checked ~ label > .layout-preview {
   filter: none;
   opacity: 1;
 }
@@ -136,10 +136,10 @@ h1 {
   translate: 0 100%;
   transition: translate 0.4s;
 }
-.layout-option:has(:is(:hover, :focus-visible, :checked)) .layout-name {
+.layout-button:is(:hover, :focus-visible, :checked) ~ .layout-name {
   translate: 0;
 }
-.layout-option:has(:checked) .layout-name::before {
+.layout-button:checked ~ .layout-name::before {
   content: "";
   width: 0;
   height: 0;
@@ -147,7 +147,7 @@ h1 {
   border-block: 0.375em solid transparent;
   border-right: 1em solid var(--white);
 }
-.layout-option:has(:checked) .layout-name::after {
+.layout-button:checked ~ .layout-name::after {
   content: "";
   width: 0;
   height: 0;
