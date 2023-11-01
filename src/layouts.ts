@@ -6,6 +6,7 @@ export type LayoutName = "rectangle" | "cross" | "sus" | "typescript" | "turtle"
 
 export function addBricks(game: Game, layout: LayoutName) {
   const instructions: Map<LayoutName, () => void> = new Map();
+
   instructions.set("rectangle", () => {
     for (let row = 0; row < 12; row++) {
       for (let col = 0; col < 6; col++) {
@@ -13,6 +14,7 @@ export function addBricks(game: Game, layout: LayoutName) {
       }
     }
   });
+
   instructions.set("cross", () => {
     const template = [
       "Y  Y             Y  Y  ",
@@ -40,6 +42,7 @@ export function addBricks(game: Game, layout: LayoutName) {
       }
     }
   });
+
   instructions.set("sus", () => {
     const template = [
       " R             B    ",
@@ -69,6 +72,7 @@ export function addBricks(game: Game, layout: LayoutName) {
       }
     }
   });
+
   instructions.set("typescript", () => {
     const template = [
       "##########",
@@ -95,6 +99,7 @@ export function addBricks(game: Game, layout: LayoutName) {
       }
     }
   });
+
   instructions.set("turtle", () => {
     const template = [
       "        g g        ",
@@ -127,6 +132,7 @@ export function addBricks(game: Game, layout: LayoutName) {
       }
     }
   });
+
   const instruction = instructions.get(layout);
   if (instruction) {instruction();}
 }
