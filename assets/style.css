@@ -102,8 +102,6 @@ h1 {
   width: 37em;
   margin-block: 1em;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
   scrollbar-width: none;
 }
 .layout-container::-webkit-scrollbar {
@@ -113,7 +111,6 @@ h1 {
   position: relative;
   flex-shrink: 0;
   overflow: hidden;
-  scroll-snap-align: center;
 }
 .layout-button {
   display: block;
