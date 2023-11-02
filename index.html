@@ -64,8 +64,7 @@
 </main>
 
 <script>
-  const lc = document.querySelector(".layout-container");
-  lc.addEventListener("wheel", (e) => { lc.scrollLeft += e.deltaY; });
+  document.querySelector(".layout-container").addEventListener("wheel", (e) => { e.currentTarget.scrollLeft += e.deltaY; });
 </script>
 
 </body>
