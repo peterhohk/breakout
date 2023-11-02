@@ -1,11 +1,16 @@
 "use strict";
 import { Brick, Metal } from "./classes.js";
+function randInt(min, max) {
+    return min + Math.floor(Math.random() * (max - min + 1));
+}
 export function addBricks(game, layout) {
     const instructions = new Map();
     instructions.set("rectangle", () => {
         for (let row = 0; row < 12; row++) {
             for (let col = 0; col < 6; col++) {
-                game.addObject(Brick, game.canvas.width / 2 - 240 + col * 96, 80 + row * 32, { size: "large", hue: row * 30 });
+                const px = game.canvas.width / 2 - 240 + col * 96;
+                const py = 80 + row * 32;
+                game.addObject(Brick, px, py, { size: "large", hue: row * 30 });
             }
         }
     });
@@ -87,31 +92,19 @@ export function addBricks(game, layout) {
             }
         }
     });
-    instructions.set("typescript", () => {
-        const template = [
-            "##########",
-            "##########",
-            "##########",
-            "##########",
-            "##   #   #",
-            "### ## ###",
-            "### ## ###",
-            "### ##   #",
-            "### #### #",
-            "### #### #",
-            "### ##   #",
-            "##########",
-        ];
-        for (let row = 0; row < template.length; row++) {
-            for (let col = 0; col < template[row].length; col++) {
-                const px = game.canvas.width / 2 - (template[row].length - 1) * 32 + col * 64;
-                const py = 80 + row * 32;
-                switch (template[row][col]) {
-                    case "#":
-                        game.addObject(Brick, px, py, { size: "medium", hue: 210 });
+    instructions.set("disarray", () => {
+        for (let row = 0; row < 7; row++) {
+            for (let col = 0; col < 11; col++) {
+                const px = game.canvas.width / 2 - 320 + col * 64;
+                const py = 80 + row * 64;
+                const ox = randInt(-16, 16);
+                const oy = randInt(-16, 16);
+                switch ((row * col) % 2) {
+                    case 0:
+                        game.addObject(Brick, px + ox, py + oy, { size: "small", hue: randInt(300, 360) });
                         break;
-                    case " ":
-                        game.addObject(Metal, px, py, { size: "medium" });
+                    case 1:
+                        game.addObject(Metal, px + ox, py + oy, { size: "small" });
                         break;
                 }
             }
@@ -158,6 +151,36 @@ export function addBricks(game, layout) {
                         break;
                     case "x":
                         game.addObject(Metal, px, py, { size: "small" });
+                        break;
+                }
+            }
+        }
+    });
+    instructions.set("typescript", () => {
+        const template = [
+            "##########",
+            "##########",
+            "##########",
+            "##########",
+            "##   #   #",
+            "### ## ###",
+            "### ## ###",
+            "### ##   #",
+            "### #### #",
+            "### #### #",
+            "### ##   #",
+            "##########",
+        ];
+        for (let row = 0; row < template.length; row++) {
+            for (let col = 0; col < template[row].length; col++) {
+                const px = game.canvas.width / 2 - (template[row].length - 1) * 32 + col * 64;
+                const py = 80 + row * 32;
+                switch (template[row][col]) {
+                    case "#":
+                        game.addObject(Brick, px, py, { size: "medium", hue: 210 });
+                        break;
+                    case " ":
+                        game.addObject(Metal, px, py, { size: "medium" });
                         break;
                 }
             }

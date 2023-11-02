@@ -275,7 +275,8 @@ export class Ball extends GameObject {
         this.fired = false;
         this.speedIncrement = 0.125;
         this.maxSpeed = 8;
-        this.angleVariation = 5;
+        this.paddleAngleVariation = 5;
+        this.antistuckAngleVariation = 1;
     }
     drawObject() {
         const rgrad = this.game.ctx.createRadialGradient(-this.radius / 2, -this.radius / 2, 0, 0, 0, this.radius);
@@ -311,7 +312,7 @@ export class Ball extends GameObject {
         this.onCollisionWith(Paddle, (paddle) => {
             this.bounceOff(paddle);
             this.speed = Math.min(this.speed + this.speedIncrement, this.maxSpeed);
-            this.angle += (this.x - paddle.x) / (paddle.width / 2) * this.angleVariation;
+            this.angle += (this.x - paddle.x) / (paddle.width / 2) * this.paddleAngleVariation;
         });
         // bounce off bricks and destroy bricks
         this.onCollisionWith(Brick, (brick) => {
@@ -322,6 +323,7 @@ export class Ball extends GameObject {
         // bounce off metal bricks
         this.onCollisionWith(Metal, (metal) => {
             this.bounceOff(metal);
+            this.angle += (Math.random() - 0.5) * this.antistuckAngleVariation;
         });
         // lose a life if fail to catch ball
         if (this.y + this.vy > this.game.canvas.height + this.height) {
