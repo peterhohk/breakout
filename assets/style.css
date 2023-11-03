@@ -29,6 +29,8 @@ label, button, input {
 
 /* RESET ENDS */
 
+/* GENERAL STYLE STARTS */
+
 :root {
   --black: #000;
   --off-black: #222;
@@ -64,6 +66,8 @@ button, [type="submit"] {
 }
 
 /* GENERAL STYLE ENDS */
+
+/* MAIN STYLE STARTS */
 
 main {
   position: relative;
@@ -171,3 +175,5 @@ h1 {
     display: none;
   }
 }
+
+/* MAIN STYLE ENDS */
