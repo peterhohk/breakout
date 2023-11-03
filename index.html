@@ -21,7 +21,7 @@
   <form id="setup">
     <h1>Breakout</h1>
     <span>- select a layout -</span>
-    <ul class="layout-container">
+    <ul class="layout-container" onwheel="this.scrollLeft += event.deltaY">
       <li class="layout-option">
         <input type="radio" name="layout" value="rectangle" class="layout-button" id="rectangle" checked autofocus>
         <label for="rectangle">
@@ -69,10 +69,6 @@
   </form>
   <span class="attribution">©️ 2023 <a href="https://github.com/peterhohk" target="_blank">peterhohk</a></span>
 </main>
-
-<script>
-  document.querySelector(".layout-container").addEventListener("wheel", (e) => { e.currentTarget.scrollLeft += e.deltaY; });
-</script>
 
 </body>
 
