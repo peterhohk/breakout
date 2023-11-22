@@ -1,6 +1,6 @@
 # Breakout
 
-An implementation of the classic brick breaking game using the Canvas API.
+Brick breaking game made with Canvas API.
 
 Created as a practice project for writing TypeScript.
 
