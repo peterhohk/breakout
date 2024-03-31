@@ -2,8 +2,6 @@
 
 Brick breaking game made with Canvas API.
 
-Created as a practice project for writing TypeScript.
-
 ## Tech stack
 
 - HTML & CSS
